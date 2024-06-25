@@ -4,8 +4,15 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+
+const PostMadel = require('./models/postMadel');
+
 const app = express();
 
+
+app.use(express.json());
+
+app.use(PostMadel);
 const PORT = process.env.PORT;
 
 const started = async() => {
@@ -30,6 +37,33 @@ const started = async() => {
 
 started();
 
+app.get('/', (req, res) => {
+    res.status(200).send("Boshladik Shoxruz");
+});
 
-// pass: 630A5ovhU57qk1a0
-// mongodb+srv://abshoxruz:<password>@cluster0.r5gvoke.mongodb.net/
+try{
+    app.post('/', async () => {
+        let {title, body} = req.body;
+        let newPost = await PostMadel.create({
+            title, 
+            body
+        });
+        res.status(201).json(newPost);
+    });
+} catch (e) {
+    res.status(500).json(e);
+}
+
+
+app.delete('/:id', (req, res) => {
+    let {id} = req.params;
+    req.send(id);
+});
+
+app.put('/:id', (req, res) => {
+    let {id} = req.params;
+    let body = req.body;
+
+    res.json(id, body);
+});
+
